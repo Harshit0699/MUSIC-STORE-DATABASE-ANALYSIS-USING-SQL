@@ -1,4 +1,5 @@
---SOME QUESTIONS BASED ON THE MUSIC STORE DATABASE--
+# Music Store Database Analysis
+--This analysis is based on the Music Store Database. The following SQL queries were used to extract insights:
 
 -- Q1: Who is the senior most employee based on job title?
 -- Solution:

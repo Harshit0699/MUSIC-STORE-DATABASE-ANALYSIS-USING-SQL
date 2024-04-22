@@ -1,153 +1,48 @@
 # Music Store Database Analysis
-This analysis is based on the Music Store Database.
-1. **Senior Most Employee:** The analysis identified the employee with the highest level in the organization. This information can be used for decision-making related to succession planning, leadership development, and organizational structure.
 
-2. **Countries with Most Invoices:** The analysis revealed the countries generating the most invoices. This insight can guide international marketing strategies and resource allocation.
+## Project Overview
+This project involves analyzing a Music Store Database using SQL queries to extract insights and uncover trends related to music sales, customer behaviors, and artist popularity. The analysis is implemented through a series of SQL queries each designed to address specific questions related to the business operations of a hypothetical music store.
 
-3. **Top Invoice Values:** The top three invoice values were identified. This information can help in understanding the spending patterns of customers and in designing pricing strategies.
+## Repository Structure
+```
+- SQL data analysis.sql      - Contains all the SQL queries used to perform the database analysis
+- Music Store database.sql   - Contains data used is analysis
+- Music database schema.png  - Can be used to understand data
+```
 
-4. **Best City for Customers:** The city with the highest sum of invoice totals was identified. This city could be an ideal location for promotional events like a Music Festival.
+## Queries and Analysis
+This analysis covers a range of queries to explore different aspects of the database:
+1. **Senior-most Employee:** Identifies the most senior employee based on job title.
+2. **Top Countries by Invoices:** Lists countries generating the most invoices.
+3. **Top Invoice Values:** Finds the top three values of total invoices.
+4. **City with Highest Sales:** Searches for the city with the highest sum of invoice totals.
+5. **Best Customer:** Determines the customer who has spent the most money.
+6. **Rock Music Listeners:** Lists all customers who prefer Rock music.
+7. **Top Rock Artists:** Identifies the top 10 rock artists by track counts.
+8. **Long Track List:** Compiles tracks longer than the average track length.
+9. **Spending by Customer on Artists:** Calculates total spending by each customer on artists.
+10. **Popular Music Genre by Country:** Identifies the most popular music genre in each country.
+11. **Top Spenders by Country:** Shows the top spender in each country.
 
-5. **Best Customer:** The customer who has spent the most money was identified. Recognizing such customers can help in customer retention strategies, personalized marketing, and improving customer loyalty.
+### Prerequisites
+Ensure you have a SQL-compatible database management system (DBMS) installed, such as MySQL, PostgreSQL, or SQLite, to run the queries contained in the SQL file.
 
-6. **Rock Music Listeners:** The analysis provided a list of all Rock Music listeners. This demographic information can be used to target marketing and promotional efforts for Rock music.
+### Installation
+1. Clone the repository locally:
+```
+git clone https://github.com/Harshit0699/MUSIC-STORE-DATAB...
+```
+2. Open your DBMS and create a connection to your database server.
+3. Import the Music Store Database to your DBMS (Database file not included in this repository).
+4. Open the `SQL data analysis.sql` file and run the queries in your DBMS to see the results.
 
-7. **Top Rock Bands:** The top 10 rock bands based on the number of songs were identified. This information can be used for decisions related to music selection, artist collaborations, and promotional events.
+## Contributing
+Contributions to enhance the current analysis or extend the range of query topics are highly appreciated. Please fork the repository and submit a pull request with your proposed changes.
 
-8. **Longest Tracks:** Tracks longer than the average song length were identified. This can help in understanding customer preferences for song length.
+## License
+This project is open-sourced under the MIT License.
 
-9. **Customer Spending on Artists:** The amount spent by each customer on different artists was calculated. This can help in understanding customer preferences and can guide decisions related to artist collaborations and music selection.
+## Contact
+For any further questions or comments, feel free to reach out to (https://github.com/Harshit0699).
 
-10. **Most Popular Music Genre per Country:** The most popular music genre for each country was identified. This can guide decisions related to music selection, marketing strategies, and promotional efforts in different countries.
-
-11. **Top Customer per Country:** The customer who has spent the most on music for each country was identified. This can help in designing personalized marketing strategies and customer retention efforts for different countries.
-
-These insights can aid in strategic decision-making, helping to drive customer engagement, increase sales, and improve overall business performance. Remember, data analysis is a continuous process and it's important to keep analyzing and interpreting data to keep up with trends and patterns.
-
-
-###The following SQL queries were used to extract insights:
-
-## Q1: Who is the senior most employee based on job title?
-
-SELECT *
-FROM employee
-WHERE levels = (SELECT MAX(levels) FROM employee);
-
-## Q2: Which countries have the most Invoices?
-
-Select count(*), billing_country
-from invoice
-Group by billing_country
-Order by count desc;
-
-## Q3: What are top 3 values of total invoice?
-
-Select total From invoice
-order by total desc
-limit 3;
-
-## Q4: Which city has the best customers?
-We would like to throw a promotional Music Festival in the city we made the most money. The following query returns one city that has the highest sum of invoice totals. It returns both the city name & sum of all invoice totals.
-
-SELECT billing_city, SUM(total) AS total_sales
-FROM invoice
-GROUP BY billing_city
-ORDER BY total_sales DESC
-LIMIT 1;
-
-## Q5: Who is the best customer?
-The customer who has spent the most money will be declared the best customer. The following query returns the person who has spent the most money.
-
-Select customer.customer_id,  customer.first_name, customer.last_name, SUM(invoice.total) as total_sales
-from customer
-JOIN invoice ON 
-customer.customer_id = invoice.customer_id
-Group by customer.customer_id
-order by total_sales desc
-limit 1;
-
-## Q6: Write query to return the email, first name, last name, & Genre of all Rock Music listeners.
-Return your list ordered alphabetically by email starting with A.
-
-SELECT DISTINCT email,first_name, last_name
-FROM customer
-JOIN invoice ON customer.customer_id = invoice.customer_id
-JOIN invoice_line ON invoice.invoice_id = invoice_line.invoice_id
-WHERE track_id IN(
-	SELECT track_id FROM track
-	JOIN genre ON track.genre_id = genre.genre_id
-	WHERE genre.name LIKE 'Rock' )
-ORDER BY email;
-
-## Q7: Let's invite the artists who have written the most rock music in our dataset.
-Write a query that returns the Artist name and total track count of the top 10 rock bands.
-
-SELECT artist.artist_id, artist.name,COUNT(artist.artist_id) AS number_of_songs
-FROM track
-JOIN album ON album.album_id = track.album_id
-JOIN artist ON artist.artist_id = album.artist_id
-JOIN genre ON genre.genre_id = track.genre_id
-WHERE genre.name LIKE 'Rock'
-GROUP BY artist.artist_id
-ORDER BY number_of_songs DESC
-LIMIT 10;
-
-## Q8: Return all the track names that have a song length longer than the average song length.
-Return the Name and Milliseconds for each track. Order by the song length with the longest songs listed first.
-
-SELECT name, milliseconds
-FROM track
-WHERE milliseconds > (
-	SELECT AVG(milliseconds) AS avg_track_length
-	FROM track )
-ORDER BY milliseconds DESC;
-
-## Q9: Find how much amount spent by each customer on artists?
-Write a query to return customer name, artist name and total spent.
-
-WITH best_selling_artist AS (
-	SELECT artist.artist_id AS artist_id, artist.name AS artist_name, SUM(invoice_line.unit_price*invoice_line.quantity) AS total_sales
-	FROM invoice_line
-	JOIN track ON track.track_id = invoice_line.track_id
-	JOIN album ON album.album_id = track.album_id
-	JOIN artist ON artist.artist_id = album.artist_id
-	GROUP BY 1
-	ORDER BY 3 DESC
-	LIMIT 1 )
-SELECT c.customer_id, c.first_name, c.last_name, bsa.artist_name, SUM(il.unit_price*il.quantity) AS amount_spent
-FROM invoice i
-JOIN customer c ON c.customer_id = i.customer_id
-JOIN invoice_line il ON il.invoice_id = i.invoice_id
-JOIN track t ON t.track_id = il.track_id
-JOIN album alb ON alb.album_id = t.album_id
-JOIN best_selling_artist bsa ON bsa.artist_id = alb.artist_id
-GROUP BY 1,2,3,4
-ORDER BY 5 DESC;
-
-
-## Q10: We want to find out the most popular music Genre for each country.
-We determine the most popular genre as the genre with the highest amount of purchases. This query returns each country along with the top Genre. For countries where the maximum number of purchases is shared, it returns all Genres.
-
-WITH popular_genre AS 
-( SELECT COUNT(invoice_line.quantity) AS purchases, customer.country, genre.name, genre.genre_id, 
-ROW_NUMBER() OVER(PARTITION BY customer.country ORDER BY COUNT(invoice_line.quantity) DESC) AS RowNo 
-    FROM invoice_line 
-	JOIN invoice ON invoice.invoice_id = invoice_line.invoice_id
-	JOIN customer ON customer.customer_id = invoice.customer_id
-	JOIN track ON track.track_id = invoice_line.track_id
-	JOIN genre ON genre.genre_id = track.genre_id
-	GROUP BY 2,3,4
-	ORDER BY 2 ASC, 1 DESC )
-SELECT * FROM popular_genre WHERE RowNo <= 1;
-
-## Q11: Write a query that determines the customer that has spent the most on music for each country.
-This query returns the country along with the top customer and how much they spent. For countries where the top amount spent is shared, it provides all customers who spent this amount.
-
-WITH Customter_with_country AS (
-		SELECT customer.customer_id,first_name,last_name,billing_country,SUM(total) AS total_spending,
-	    ROW_NUMBER() OVER(PARTITION BY billing_country ORDER BY SUM(total) DESC) AS RowNo 
-		FROM invoice
-		JOIN customer ON customer.customer_id = invoice.customer_id
-		GROUP BY 1,2,3,4
-		ORDER BY 4 ASC,5 DESC)
-SELECT * FROM Customter_with_country WHERE RowNo <= 1;
+```
